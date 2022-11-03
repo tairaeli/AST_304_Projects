@@ -1,9 +1,3 @@
-########################################################################
-# Team <your team name>: <names>
-# AST304, Fall 2020
-# Michigan State University
-########################################################################
-
 """
 Values of physical constants imported from astropy
 """
@@ -34,7 +28,7 @@ pc = _ac.pc.value
 au = _ac.au.value
 year = _au.year.to(_au.second)
 sigmaSB = _ac.sigma_sb.value
-
+Ke = 1/5 * (3/(8*pi))**(2/3)*h**2/(m_e)*(1/(m_u))**(5/3)
 
 if __name__ == "__main__":
     
@@ -57,6 +51,7 @@ if __name__ == "__main__":
         ("astronomical unit",au,"m"),
         ("year",year,"s"),
         ("Stefan-Boltzmann constant",sigmaSB,"W m**-2 K**-4")
+        (Ke)
     ]
     
     

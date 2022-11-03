@@ -1,14 +1,9 @@
-########################################################################
-# Team <your team name>: <names>
-# AST304, Fall 2020
-# Michigan State University
-########################################################################
-
 """
-<Description of this module goes here: what it does, how it's used.>
+defines 2 functions that find the pressure and density
 """
 
-import astro_const as ac
+from astro_const import h, m_e, m_u
+import numpy as np
 
 def pressure(rho, mue):
     """
@@ -23,7 +18,7 @@ def pressure(rho, mue):
     """
     
     # replace following lines with body of routine
-    p = 0.0*rho
+    p = 1/5 * (3/(8*np.pi))**(2/3)*h**2/(m_e)*(rho/(mue*m_u))**(5/3)
     return p
 
 def density(p, mue):
@@ -39,5 +34,5 @@ def density(p, mue):
     """
     
     # replace following lines with body of routine
-    rho = 0.0*p
+    rho = (p*(1/5 * (3/(8*np.pi))**(2/3) * h**2/m_e)**-1)**(3/5) * mue * m_u
     return rho

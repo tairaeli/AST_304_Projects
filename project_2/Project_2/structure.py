@@ -1,17 +1,11 @@
-########################################################################
-# Team <your team name>: <names>
-# AST304, Fall 2020
-# Michigan State University
-########################################################################
-
 """
 <Description of this module goes here: what it does, how it's used.>
 """
 
 import numpy as np
-from eos import # fill this in
-from ode import # fill this in
-from astro_const import # fill this in
+from eos import pressure, density # fill this in
+# from ode import # fill this in
+from astro_const import G, Ke # fill this in
 
 def stellar_derivatives(m,z,mue):
     """
@@ -33,7 +27,13 @@ def stellar_derivatives(m,z,mue):
     
     dzdm = np.zeros_like(z)
 
-    # evaluate dzdm
+    r = z[0]
+
+    p = z[1]
+
+    dzdm[0] = (4*np.pi*r**2*density(p,mue))**(-1)
+
+    dzdm[1] = -G*m/(4*np.pi*r**4)
     
     return dzdm
 
@@ -55,6 +55,15 @@ def central_values(Pc,delta_m,mue):
             central values of radius and pressure (units = ?)
     """
     z = np.zeros(2)
+
+    m = delta_m
+
+    z[1] = Pc
+
+    rho = density(Pc,mue)
+
+    z[0] = ((3*m)/(4*np.pi*rho))**(1/3)
+
     # compute initial values of z = [ r, p ]
     return z
     
@@ -75,8 +84,12 @@ def lengthscales(m,z,mue):
     """
 
     # fill this in
-    pass
-    return
+    H_r = 4*np.pi*z[0]**3*density(z[1],mue)
+    H_p = (4*np.pi*z[0]**4*z[1])/(G*m)
+
+    h = min(H_r,H_p)
+
+    return h
     
 def integrate(Pc,delta_m,eta,xi,mue,max_steps=10000):
     """
@@ -108,7 +121,8 @@ def integrate(Pc,delta_m,eta,xi,mue,max_steps=10000):
     p_step = np.zeros(max_steps)
     
     # set starting conditions using central values
-    
+    z = central_values(Pc,delta_m,mue)
+
     Nsteps = 0
     for step in range(max_steps):
         radius = z[0]
@@ -117,11 +131,36 @@ def integrate(Pc,delta_m,eta,xi,mue,max_steps=10000):
         if (pressure < eta*Pc):
             break
         # store the step
+
+        m_step[step] = (step+1)*delta_m
         
+        r_step[step] = radius
+
+        p_step[step] = pressure
+
+        m = m_step[step]
+
         # set the stepsize
-        
+        h = xi*lengthscales(delta_m, z, mue)
         # take a step
+
+        # detemines initial acc
+        k1z =  stellar_derivatives(m,z,mue) 
         
+        # finds new acc from k1
+        k2z =  stellar_derivatives(m+h/2,z+h/2*k1z,mue)
+        
+        # finds new acc from k2
+        k3z =  stellar_derivatives(m+h/2,z+h/2*k2z,mue)
+        
+        # finds new acc from k3
+        k4z = stellar_derivatives(m+h,z+h*k3z,mue)
+
+        # changes r/v in next time step based on values from the k's
+        znew = z + (h/6)*(k1z + 2*k2z + 2*k3z + k4z)
+        
+        z = znew
+
         # increment the counter
         Nsteps += 1
     # if the loop runs to max_steps, then signal an error
@@ -146,4 +185,5 @@ def pressure_guess(m,mue):
             guess for pressure
     """
     # fill this in
+    Pguess = (G**5/Ke**4)*(m*mue**2)**(10/3)
     return Pguess
