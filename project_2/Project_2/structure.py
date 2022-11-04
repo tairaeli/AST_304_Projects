@@ -4,7 +4,7 @@
 
 import numpy as np
 from eos import pressure, density # fill this in
-# from ode import # fill this in
+from ode import rk4
 from astro_const import G, Ke # fill this in
 
 def stellar_derivatives(m,z,mue):
@@ -140,26 +140,11 @@ def integrate(Pc,delta_m,eta,xi,mue,max_steps=10000):
 
         m = m_step[step]
 
-        # set the stepsize
+        # # set the stepsize
         h = xi*lengthscales(delta_m, z, mue)
-        # take a step
 
-        # detemines initial acc
-        k1z =  stellar_derivatives(m,z,mue) 
-        
-        # finds new acc from k1
-        k2z =  stellar_derivatives(m+h/2,z+h/2*k1z,mue)
-        
-        # finds new acc from k2
-        k3z =  stellar_derivatives(m+h/2,z+h/2*k2z,mue)
-        
-        # finds new acc from k3
-        k4z = stellar_derivatives(m+h,z+h*k3z,mue)
-
-        # changes r/v in next time step based on values from the k's
-        znew = z + (h/6)*(k1z + 2*k2z + 2*k3z + k4z)
-        
-        z = znew
+        # # take a step
+        z = rk4(stellar_derivatives, m, z, h, mue)
 
         # increment the counter
         Nsteps += 1
