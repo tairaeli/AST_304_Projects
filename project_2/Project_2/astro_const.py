@@ -50,8 +50,8 @@ if __name__ == "__main__":
         ("parsec",pc,"m"),
         ("astronomical unit",au,"m"),
         ("year",year,"s"),
-        ("Stefan-Boltzmann constant",sigmaSB,"W m**-2 K**-4")
-        (Ke)
+        ("Stefan-Boltzmann constant",sigmaSB,"W m**-2 K**-4"),
+        ("Ke constant",Ke,"Units")
     ]
     
     
