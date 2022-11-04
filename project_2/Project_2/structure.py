@@ -140,11 +140,13 @@ def integrate(Pc,delta_m,eta,xi,mue,max_steps=10000):
 
         m = m_step[step]
 
-        # # set the stepsize
+        # set the stepsize
         h = xi*lengthscales(delta_m, z, mue)
-
-        # # take a step
-        z = rk4(stellar_derivatives, m, z, h, mue)
+        
+        # take a step
+        znew = rk4(stellar_derivatives,m,z,h,args=(mue))
+        
+        z = znew
 
         # increment the counter
         Nsteps += 1
