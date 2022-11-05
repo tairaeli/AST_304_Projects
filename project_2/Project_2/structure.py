@@ -125,6 +125,7 @@ def integrate(Pc,delta_m,eta,xi,mue,max_steps=10000):
 
     Nsteps = 0
     for step in range(max_steps):
+
         radius = z[0]
         pressure = z[1]
         # are we at the surface?
