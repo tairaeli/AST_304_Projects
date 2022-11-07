@@ -124,6 +124,7 @@ def integrate(Pc,delta_m,eta,xi,mue,max_steps=10000):
     z = central_values(Pc,delta_m,mue)
 
     Nsteps = 0
+    h = 0
     for step in range(max_steps):
 
         radius = z[0]
@@ -132,8 +133,10 @@ def integrate(Pc,delta_m,eta,xi,mue,max_steps=10000):
         if (pressure < eta*Pc):
             break
         # store the step
-
-        m_step[step] = (step+1)*delta_m
+        if (step == 0):
+            m_step[step] = delta_m
+        else:
+            m_step[step] = m_step[step-1] + h
         
         r_step[step] = radius
 
