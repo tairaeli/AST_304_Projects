@@ -117,11 +117,13 @@ def integrate(Pc,delta_m,eta,xi,mue,max_steps=10000):
     """
         
     m_step = np.zeros(max_steps)
+    m_step[0] = delta_m
     r_step = np.zeros(max_steps)
     p_step = np.zeros(max_steps)
     
     # set starting conditions using central values
     z = central_values(Pc,delta_m,mue)
+    m = delta_m
 
     Nsteps = 0
     h = 0
@@ -133,16 +135,11 @@ def integrate(Pc,delta_m,eta,xi,mue,max_steps=10000):
         if (pressure < eta*Pc):
             break
         # store the step
-        if (step == 0):
-            m_step[step] = delta_m
-        else:
-            m_step[step] = m_step[step-1] + h
-        
+        m_step[step] = m
+
         r_step[step] = radius
 
         p_step[step] = pressure
-
-        m = m_step[step]
 
         # set the stepsize
         h = xi*lengthscales(delta_m, z, mue)
@@ -150,6 +147,7 @@ def integrate(Pc,delta_m,eta,xi,mue,max_steps=10000):
         # take a step
         znew = rk4(stellar_derivatives,m,z,h,args=(mue))
         
+        m += h
         z = znew
 
         # increment the counter
