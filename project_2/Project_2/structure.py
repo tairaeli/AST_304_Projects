@@ -94,7 +94,6 @@ def lengthscales(m,z,mue):
 def integrate(Pc,delta_m,eta,xi,mue,max_steps=10000):
     """
     Integrates the scaled stellar structure equations
-
     Arguments
         Pc
             central pressure (units = ?)
@@ -117,16 +116,14 @@ def integrate(Pc,delta_m,eta,xi,mue,max_steps=10000):
     """
         
     m_step = np.zeros(max_steps)
-    m_step[0] = delta_m
     r_step = np.zeros(max_steps)
     p_step = np.zeros(max_steps)
     
     # set starting conditions using central values
     z = central_values(Pc,delta_m,mue)
     m = delta_m
-
+    
     Nsteps = 0
-    h = 0
     for step in range(max_steps):
 
         radius = z[0]
@@ -136,7 +133,7 @@ def integrate(Pc,delta_m,eta,xi,mue,max_steps=10000):
             break
         # store the step
         m_step[step] = m
-
+        
         r_step[step] = radius
 
         p_step[step] = pressure
@@ -146,8 +143,8 @@ def integrate(Pc,delta_m,eta,xi,mue,max_steps=10000):
         
         # take a step
         znew = rk4(stellar_derivatives,m,z,h,args=(mue))
-        
         m += h
+        
         z = znew
 
         # increment the counter
