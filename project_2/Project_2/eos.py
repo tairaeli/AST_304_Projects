@@ -1,5 +1,8 @@
 """
 defines 2 functions that find the pressure and density
+
+utilizes equation (1) in the instructions to make the calculations
+    for pressure and denstity
 """
 
 from astro_const import h, m_e, m_u
@@ -11,13 +14,13 @@ def pressure(rho, mue):
         rho
             mass density (kg/m**3)
         mue
-            baryon/electron ratio
+            baryon/electron ratio (=2)
     
     Returns
         electron degeneracy pressure (Pascal)
     """
     
-    # replace following lines with body of routine
+    # equation (1) from instructions
     p = 1/5 * (3/(8*np.pi))**(2/3)*h**2/(m_e)*(rho/(mue*m_u))**(5/3)
     return p
 
@@ -27,11 +30,12 @@ def density(p, mue):
         p
             electron degeneracy pressure (Pascal)
         mue
-            baryon/electron ratio
+            baryon/electron ratio (=2)
         
     Returns
         mass density (kg/m**3)
     """
-
+    
+    # a rearangement of equation (1) from the instructions
     rho = (p*(1/5 * (3/(8*np.pi))**(2/3) * h**2/m_e)**-1)**(3/5) * mue * m_u
     return rho
