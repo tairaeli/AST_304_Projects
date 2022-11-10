@@ -1,3 +1,10 @@
+########################################################################
+# MSU Hollow White Dwarf Society: Erin Syerson, Elias Taira, Michael 
+#   Bellaver, and Joey Epley
+# AST304, Fall 2020
+# Michigan State University
+########################################################################
+
 """
 defines 2 functions that find the pressure and density
 
