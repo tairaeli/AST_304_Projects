@@ -25,17 +25,17 @@ def stellar_derivatives(m,z,mue):
             Lagrangian derivatives dr/dm, dP/dm
     """
     
-    dzdm = np.zeros_like(z)
+    dzdm = np.zeros_like(z)#sets up an empty array for dzdm (change in z values over mass)
 
-    r = z[0]
+    r = z[0]#sets up an array of radius values which are the first elements of the dzdm array
 
-    p = z[1]
+    p = z[1]#sets up an array of pressure values which are the second elements of the dzdm array
 
-    dzdm[0] = (4*np.pi*r**2*density(p,mue))**(-1)
+    dzdm[0] = (4*np.pi*r**2*density(p,mue))**(-1) #uses the equation for radius to determine the first elements of the dzdm array
 
-    dzdm[1] = -G*m/(4*np.pi*r**4)
+    dzdm[1] = -G*m/(4*np.pi*r**4)#uses the pressure equation to determine the second elements of the dzdm array
 
-    return dzdm
+    return dzdm #returns the dzdm array
 
 def central_values(Pc,delta_m,mue):
     """
@@ -54,17 +54,17 @@ def central_values(Pc,delta_m,mue):
         z = array([ r, p ])
             central values of radius and pressure (units = ?)
     """
-    z = np.zeros(2)
+    z = np.zeros(2)#sets up an array of zeroes that has a shape of 2
 
-    m = delta_m
+    m = delta_m#sets mass as the delta_m input of the function
 
-    z[1] = Pc
+    z[1] = Pc#sets pc as the second elements of the z array
 
-    rho = density(Pc,mue)
+    rho = density(Pc,mue)#determines density by running the density function with inputs of pc (calculated above) and mue (given for central_values)
 
-    z[0] = ((3*m)/(4*np.pi*rho))**(1/3)
+    z[0] = ((3*m)/(4*np.pi*rho))**(1/3)#calculates the first elements of the z array
     
-    return z
+    return z#returns the z array
     
 def lengthscales(m,z,mue):
     """
@@ -83,12 +83,12 @@ def lengthscales(m,z,mue):
     """
 
     # fill this in
-    H_r = 4*np.pi*z[0]**3*density(z[1],mue)
-    H_p = (4*np.pi*z[0]**4*z[1])/(G*m)
+    H_r = 4*np.pi*z[0]**3*density(z[1],mue)#calculates radius
+    H_p = (4*np.pi*z[0]**4*z[1])/(G*m)#calculates pressure
 
-    h = min(H_r,H_p)
+    h = min(H_r,H_p)#determines whether radius or pressure is smaller and then assigns it to the value h (step size)
 
-    return h
+    return h#returns h
     
 def integrate(Pc,delta_m,eta,xi,mue,max_steps=10000):
     """
@@ -114,48 +114,47 @@ def integrate(Pc,delta_m,eta,xi,mue,max_steps=10000):
             integration (what are the units?)
     """
         
-    m_step = np.zeros(max_steps)
-    r_step = np.zeros(max_steps)
-    p_step = np.zeros(max_steps)
+    m_step = np.zeros(max_steps)#creates an array of zeros for m_step
+    r_step = np.zeros(max_steps)#creates an array of zeros for r_step
+    p_step = np.zeros(max_steps)#creates an array of zeros for p_step
 
     # set starting conditions using central values
-    z = central_values(Pc,delta_m,mue)
-    m = delta_m
+    z = central_values(Pc,delta_m,mue)#sets z by running central_values function
+    m = delta_m#sets mass as delta_m (given when running the function)
     
-    Nsteps = 0
-    for step in range(max_steps):
+    Nsteps = 0#Initializes step value as zero
+    for step in range(max_steps):#runs a loop which runs for the value of max_steps (10,000 in this case)
 
-        radius = z[0]
-        pressure = z[1]
+        radius = z[0]#sets radius as the first elements of the z array
+        pressure = z[1]#sets pressure as the second elements of the z array
         # are we at the surface?
 
-        if (pressure < eta*Pc):
-            # print(step)
-            p_step[step] = pressure
+        if (pressure < eta*Pc):#breaks the loop if pressure is too large
+            
             break
         # store the step
-        m_step[step] = m
+        m_step[step] = m#sets m as the step value in the mass_step array (step 1, step 2, step 3, etc. = m_step[1],m_step[2],m_step[3],etc.)
         
-        r_step[step] = radius
+        r_step[step] = radius#same as above but for radius and radius_step
 
-        p_step[step] = pressure
+        p_step[step] = pressure#same as above but for pressure and pressure_step
 
         # set the stepsize
 
-        h = xi*lengthscales(m_step[step], z, mue)
+        h = xi*lengthscales(m_step[step], z, mue)#sets stepsize for the actual taking of the step
 
         # take a step
-        z = rk4(stellar_derivatives,m,z,h,args=(mue))
-        m += h
+        z = rk4(stellar_derivatives,m,z,h,args=(mue))#calculates the new values for each step taken
+        m += h#updates mass by adding step to the previous mass (m = m + h)
 
         # increment the counter
-        Nsteps += 1
+        Nsteps += 1#updates step counter
         
     # if the loop runs to max_steps, then signal an error
     else:
-        raise Exception('too many iterations')
+        raise Exception('too many iterations')#raises an error if the number of steps exceeds the max set (10,000)
         
-    return m_step[0:Nsteps],r_step[0:Nsteps],p_step[0:Nsteps+1]
+    return m_step[0:Nsteps],r_step[0:Nsteps],p_step[0:Nsteps]#returns all mass, radius, and pressure values over the whole loop in the m_step, r_step, and p_step arrays
 
 
 def pressure_guess(m,mue):
@@ -173,5 +172,5 @@ def pressure_guess(m,mue):
         P
             guess for pressure
     """
-    Pguess = (G**5/Ke**4)*(m*mue**2)**(10/3)
+    Pguess = (G**5/Ke**4)*(m*mue**2)**(10/3)#calculates pressure guess from equation 16 in instructions
     return Pguess
