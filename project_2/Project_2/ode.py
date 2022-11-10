@@ -1,7 +1,7 @@
 ########################################################################
-# MSU Hollow Earth Society: 
-# Joe Epley, Elias Taira, Erin Syerson, Michael Bellaver
-# AST 304, Fall 2020
+# MSU Hollow White Dwarf Society: Erin Syerson, Elias Taira, Michael 
+#   Bellaver, and Joey Epley
+# AST304, Fall 2020
 # Michigan State University
 ########################################################################
 
