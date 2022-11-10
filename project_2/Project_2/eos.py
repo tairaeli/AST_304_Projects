@@ -32,7 +32,6 @@ def density(p, mue):
     Returns
         mass density (kg/m**3)
     """
-    
-    # replace following lines with body of routine
+
     rho = (p*(1/5 * (3/(8*np.pi))**(2/3) * h**2/m_e)**-1)**(3/5) * mue * m_u
     return rho

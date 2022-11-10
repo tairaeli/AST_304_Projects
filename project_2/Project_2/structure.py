@@ -3,9 +3,9 @@
 """
 
 import numpy as np
-from eos import pressure, density # fill this in
+from eos import pressure, density
 from ode import rk4
-from astro_const import G, Ke # fill this in
+from astro_const import G, Ke
 
 def stellar_derivatives(m,z,mue):
     """
@@ -34,7 +34,7 @@ def stellar_derivatives(m,z,mue):
     dzdm[0] = (4*np.pi*r**2*density(p,mue))**(-1)
 
     dzdm[1] = -G*m/(4*np.pi*r**4)
-    
+
     return dzdm
 
 def central_values(Pc,delta_m,mue):
@@ -63,8 +63,7 @@ def central_values(Pc,delta_m,mue):
     rho = density(Pc,mue)
 
     z[0] = ((3*m)/(4*np.pi*rho))**(1/3)
-
-    # compute initial values of z = [ r, p ]
+    
     return z
     
 def lengthscales(m,z,mue):
@@ -118,7 +117,7 @@ def integrate(Pc,delta_m,eta,xi,mue,max_steps=10000):
     m_step = np.zeros(max_steps)
     r_step = np.zeros(max_steps)
     p_step = np.zeros(max_steps)
-    
+
     # set starting conditions using central values
     z = central_values(Pc,delta_m,mue)
     m = delta_m
@@ -129,7 +128,10 @@ def integrate(Pc,delta_m,eta,xi,mue,max_steps=10000):
         radius = z[0]
         pressure = z[1]
         # are we at the surface?
+
         if (pressure < eta*Pc):
+            # print(step)
+            p_step[step] = pressure
             break
         # store the step
         m_step[step] = m
@@ -139,21 +141,22 @@ def integrate(Pc,delta_m,eta,xi,mue,max_steps=10000):
         p_step[step] = pressure
 
         # set the stepsize
-        h = xi*lengthscales(delta_m, z, mue)
-        
+
+        h = xi*lengthscales(m_step[step], z, mue)
+
         # take a step
-        znew = rk4(stellar_derivatives,m,z,h,args=(mue))
+        z = rk4(stellar_derivatives,m,z,h,args=(mue))
         m += h
-        
-        z = znew
 
         # increment the counter
         Nsteps += 1
+        
     # if the loop runs to max_steps, then signal an error
     else:
         raise Exception('too many iterations')
         
-    return m_step[0:Nsteps],r_step[0:Nsteps],p_step[0:Nsteps]
+    return m_step[0:Nsteps],r_step[0:Nsteps],p_step[0:Nsteps+1]
+
 
 def pressure_guess(m,mue):
     """
@@ -170,6 +173,5 @@ def pressure_guess(m,mue):
         P
             guess for pressure
     """
-    # fill this in
     Pguess = (G**5/Ke**4)*(m*mue**2)**(10/3)
     return Pguess
