@@ -1,7 +1,12 @@
+########################################################################
+# MSU Hollow Low Mass Star Society: Erin Syerson, Elias Taira, Michael 
+#   Bellaver, and Joey Epley
+# AST304, Fall 2020
+# Michigan State University
+########################################################################
+
 """
 Routines to compute an adiabatic equation of state.
-
-<Team name, members go here>
 """
 
 import numpy as np
