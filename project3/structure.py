@@ -1,8 +1,9 @@
 """ 
+MSU Hollow Low-Mass Star Society
+Elias Taira, Michael Bellaver, Joe Epley, Erin Syerson
+AST 304 Project 3
 Routines for computing structure of fully convective star of a given mass and 
 radius.
-
-<Team name, members go here>
 """
 
 import numpy as np
