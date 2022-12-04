@@ -38,7 +38,7 @@ def central_thermal(m,r,mu):
 
 # The following should be modified versions of the routines you wrote for the 
 # white dwarf project
-def stellar_derivatives(m,z,mu, XH):
+def stellar_derivatives(m,z,mu,XH):
     """
     RHS of Lagrangian differential equations for radius and pressure
     
@@ -119,7 +119,7 @@ def central_values(Pc,delta_m,mue):
     # returns the z array
     return z
 
-def lengthscales(m,z,mue):
+def lengthscales(m,z,mu,XH):
     """
     Computes the radial length scale H_r and the pressure length H_P
     
@@ -135,15 +135,25 @@ def lengthscales(m,z,mue):
         z/|dzdm| (units = ?)
     """
 
+    r,p,L = z
+
+    dzdm = stellar_derivatives(m, z, mu, XH)
+
+    Pc, rhoc, Tc = central_thermal(m, r, mu)
+
+    rho, T = get_rho_and_T(p, Pc, rhoc, Tc)
+
     #calculates radius
-    H_r = 4*np.pi*z[0]**3*density(z[1],mue)
+    H_r = 4*np.pi*z[0]**3*rho
     
     #calculates pressure
     H_p = (4*np.pi*z[0]**4*z[1])/(G*m)
 
+    H_L = z[2]/np.abs()
+
     #determines whether radius or pressure is smaller and then assigns 
     #   it to the value h (step size)
-    h = min(H_r,H_p)
+    h = min(H_r,H_p, H_L)
 
     #returns h
     return h
