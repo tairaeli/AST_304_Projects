@@ -1,6 +1,10 @@
-# 
-# <Team name, members go here>
-# 
+"""
+MSU Hollow Low-Mass Star Society
+Elias Taira, Michael Bellaver, Joe Epley, Erin Syerson
+AST 304 Project 3
+
+Uses the PP chain to approximate the heating rate
+"""
 
 import numpy as np
 
