@@ -82,7 +82,7 @@ def stellar_derivatives(m,z,mu,XH):
 
     return dzdm #returns the dzdm array
 
-def central_values(Pc,delta_m,mue):
+def central_values(Pc,delta_m,mu, XH):
     """
     Constructs the boundary conditions at the edge of a small, constant density 
     core of mass delta_m with central pressure P_c
@@ -101,7 +101,7 @@ def central_values(Pc,delta_m,mue):
     """
     
     #sets up an array of zeroes that has a shape of 2
-    z = np.zeros(2)
+    z = np.zeros(3)
 
     #sets mass as the delta_m input of the function
     m = delta_m
@@ -111,6 +111,15 @@ def central_values(Pc,delta_m,mue):
 
     #determines density by running the density function with inputs of 
     #   pc (calculated above) and mue (given for central_values)
+
+    r,p,L = z
+
+    dzdm = stellar_derivatives(m, z, mu, XH)
+
+    Pc, rhoc, Tc = central_thermal(m, r, mu)
+
+    rho, T = get_rho_and_T(p, Pc, rhoc, Tc)
+
     rho = density(Pc,mue)
 
     #calculates the first elements of the z array
@@ -158,7 +167,7 @@ def lengthscales(m,z,mu,XH):
     #returns h
     return h
 
-def integrate(Pc,delta_m,eta,xi,mue,max_steps=10000):
+def integrate(Pc,delta_m,eta,xi,mu,max_steps=10000):
     """
     Integrates the scaled stellar structure equations
     Arguments
@@ -170,7 +179,7 @@ def integrate(Pc,delta_m,eta,xi,mue,max_steps=10000):
             The integration stops when P < eta * Pc
         xi
             The stepsize is set to be xi*min(p/|dp/dm|, r/|dr/dm|)
-        mue
+        mu
             mean electron mass
         max_steps
             solver will quit and throw error if this more than max_steps are 
@@ -186,9 +195,10 @@ def integrate(Pc,delta_m,eta,xi,mue,max_steps=10000):
     m_step = np.zeros(max_steps)
     r_step = np.zeros(max_steps)
     p_step = np.zeros(max_steps)
+    l_step = np.zeros(max_steps)
 
     # set starting conditions using central_values
-    z = central_values(Pc,delta_m,mue)
+    z = central_values(Pc,delta_m,mu)
     #sets mass as delta_m (given when running the function)
     m = delta_m
     
@@ -202,6 +212,8 @@ def integrate(Pc,delta_m,eta,xi,mue,max_steps=10000):
         #sets pressure as the second elements of the z array
         pressure = z[1]
         
+        luminosity = z[2]
+
         # are we at the surface?
         #breaks the loop if pressure is too large
         if (pressure < eta*Pc):
@@ -216,11 +228,13 @@ def integrate(Pc,delta_m,eta,xi,mue,max_steps=10000):
         #same as above but for pressure and pressure_step
         p_step[step] = pressure
 
+        l_step[step] = luminosity
+
         # set the stepsize
-        h = xi*lengthscales(m_step[step], z, mue)
+        h = xi*lengthscales(m_step[step], z, mu)
 
         # take a step
-        z = rk4(stellar_derivatives,m,z,h,args=(mue))
+        z = rk4(stellar_derivatives,m,z,h,args=(mu))
         #updates mass by adding step to the previous mass (m = m + h)
         m += h
 
@@ -231,4 +245,4 @@ def integrate(Pc,delta_m,eta,xi,mue,max_steps=10000):
     else:
         raise Exception('too many iterations')
         
-    return m_step[0:Nsteps],r_step[0:Nsteps],p_step[0:Nsteps]
+    return m_step[0:Nsteps],r_step[0:Nsteps],p_step[0:Nsteps], l_step[0:Nsteps]
