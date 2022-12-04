@@ -38,7 +38,7 @@ def central_thermal(m,r,mu):
 
 # The following should be modified versions of the routines you wrote for the 
 # white dwarf project
-def stellar_derivatives(m,z,mue):
+def stellar_derivatives(m,z,mu, XH):
     """
     RHS of Lagrangian differential equations for radius and pressure
     
@@ -47,9 +47,9 @@ def stellar_derivatives(m,z,mue):
             current value of the mass
         z (array)
             current values of (radius, pressure)
-        mue
+        mu
             ratio, nucleons to electrons.  For a carbon-oxygen white dwarf, 
-            mue = 2.
+            mu = 2.
         
     Returns
         dzdm (array)
@@ -66,13 +66,19 @@ def stellar_derivatives(m,z,mue):
     #   of the dzdm array
     p = z[1]
 
+    Pc, rhoc, Tc = central_thermal(m, r, mu)
+
+    rho, T = get_rho_and_T(p,Pc,rhoc,Tc)
+
     #uses the equation for radius to determine the first elements 
     #   of the dzdm array
-    dzdm[0] = (4*np.pi*r**2*density(p,mue))**(-1)
+    dzdm[0] = (4*np.pi*r**2*rho)**(-1)
 
     #uses the pressure equation to determine the second elements 
     #   of the dzdm array
     dzdm[1] = -G*m/(4*np.pi*r**4)
+
+    dzdm[2] = pp_rate(T, rho, XH, pp_factor= 1)
 
     return dzdm #returns the dzdm array
 
@@ -86,7 +92,7 @@ def central_values(Pc,delta_m,mue):
             central pressure (units = ?)
         delta_m
             core mass (units = ?)
-        mue
+        mu
             nucleon/electron ratio
     
     Returns
