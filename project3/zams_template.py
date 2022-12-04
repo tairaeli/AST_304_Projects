@@ -1,7 +1,9 @@
 """
-Routines for computing the zero-aged main-sequence for low-mass stars.
+MSU Hollow Low-Mass Star Society
+Elias Taira, Michael Bellaver, Joe Epley, Erin Syerson
+AST 304 Project 3
 
-<team name, members go here>
+Routines for computing the zero-aged main-sequence for low-mass stars.
 """
 
 import numpy as np
@@ -40,6 +42,10 @@ def surface_luminosity(Teff,radius):
     Arguments
         Teff [K]
         radius [m]
+        
+    Returns
+    
+        Surface Luminosity 
     """
     
     # fill this in
