@@ -30,7 +30,7 @@ def central_thermal(m,r,mu):
     """
     # fill this in
 
-    Pc = 
+    Pc = 3/(8*np.pi) * G*m**2/r**4
     rhoc = 3/(4*np.pi) * m/r**3
     Tc = (G*m/r)*mu*m_u/(2*kB)
     
