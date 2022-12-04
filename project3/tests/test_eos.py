@@ -3,7 +3,6 @@ from eos import get_rho_and_T, mean_molecular_weight
 from numcheck import within_tolerance
 
 def test_chem():
-    #scaling for H,He mixture
     for X in [0.0,0.3,0.7,1.0]:
         mu = mean_molecular_weight([1.0,2.0],[1.0,4.0],[X,1.0-X])
         assert within_tolerance(mu,4.0/(5.0*X+3.0))    
