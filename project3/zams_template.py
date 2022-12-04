@@ -32,7 +32,8 @@ def Teff(Mwant):
     Teffs = np.array([2800.0,3150.0,3300.0,3400.0]) # [K]
     
     # fill this out to perform interpolation to find Teff for Mwant
-    Teff = 0.0
+    Teff = np.interp(Mwant,masses,Teffs)
+    
     return Teff
 
 def surface_luminosity(Teff,radius):
@@ -49,5 +50,6 @@ def surface_luminosity(Teff,radius):
     """
     
     # fill this in
-    luminosity = 0.0
+    sigma_sb = 5.67*10**(-8)
+    luminosity = 4*np.pi*radius**2*sigma_sb*Teff**4
     return luminosity
