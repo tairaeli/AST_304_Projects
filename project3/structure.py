@@ -29,10 +29,12 @@ def central_thermal(m,r,mu):
             central pressure, density, and temperature in solar units
     """
     # fill this in
+    m *= Msun
+    r *= Rsun
 
-    Pc = 3/(8*np.pi) * G*m**2/r**4
-    rhoc = 3/(4*np.pi) * m/r**3
-    Tc = (G*m/r)*mu*m_u/(2*kB)
+    Pc = 0.77 * G*m**2/r**4
+    rhoc = 5.99 * 3/(4*np.pi) * m/r**3
+    Tc = 0.54*(G*m/r)*mu*m_u/(kB)
     
     return Pc, rhoc, Tc
 
