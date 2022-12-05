@@ -16,7 +16,6 @@ def central_thermal(m,r,mu):
     """ 
     Computes the central pressure, density, and temperature from the polytropic
     relations for n = 3/2.
-
     Arguments
         m
             mass in solar units
@@ -122,11 +121,10 @@ def central_values(Pc,delta_m,mu, XH):
 
     rho, T = get_rho_and_T(p, Pc, rhoc, Tc)
 
-    rho = density(Pc,mue)
-
     #calculates the first elements of the z array
     z[0] = ((3*m)/(4*np.pi*rho))**(1/3)
     
+    z[2] = m*pp_scale(rhoc,Tc)
     # returns the z array
     return z
 
@@ -146,7 +144,7 @@ def lengthscales(m,z,mu,XH):
         z/|dzdm| (units = ?)
     """
 
-    r,p,L = z
+    r,P,L = z
 
     dzdm = stellar_derivatives(m, z, mu, XH)
 
@@ -155,16 +153,16 @@ def lengthscales(m,z,mu,XH):
     rho, T = get_rho_and_T(p, Pc, rhoc, Tc)
 
     #calculates radius
-    H_r = 4*np.pi*z[0]**3*rho
+    H_r = 4*np.pi*r**3*rho
     
     #calculates pressure
-    H_p = (4*np.pi*z[0]**4*z[1])/(G*m)
+    H_p = (4*np.pi*r**4*P)/(G*m)
 
-    H_L = z[2]/np.abs()
+    H_L = L/np.abs(dzdm[2])
 
     #determines whether radius or pressure is smaller and then assigns 
     #   it to the value h (step size)
-    h = min(H_r,H_p, H_L)
+    h = min(H_r,H_p,H_L)
 
     #returns h
     return h
