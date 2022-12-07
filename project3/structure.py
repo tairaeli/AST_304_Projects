@@ -31,9 +31,9 @@ def central_thermal(m,r,mu):
     m *= Msun
     r *= Rsun
 
-    Pc = 0.77 * G*m**2/r**4
-    rhoc = 5.99 * 3/(4*np.pi) * m/r**3
-    Tc = 0.54*(G*m/r)*mu*m_u/(kB)
+    Pc = 3/(8*np.pi) * G*m**2/r**4
+    rhoc = 3/(4*np.pi) * m/r**3
+    Tc = (G*m/r)*mu*m_u/(2*kB)
     
     return Pc, rhoc, Tc
 
@@ -113,14 +113,14 @@ def central_values(Pc_i, R,delta_m, mu, XH):
 
     Pc, rhoc, Tc = central_thermal(m, R, mu)
 
-    rho, T = get_rho_and_T(p, Pc, rhoc, Tc)
-
-    rho = density(Pc,mue)
+    # would Pc and Pc_i be the same here
+    rho, T = get_rho_and_T(Pc_i, Pc, rhoc, Tc)
 
     #calculates the first elements of the z array
-    z[0] = ((3*m)/(4*np.pi*rho))**(1/3)
+
+    z[1] = Pc
     
-    z[2] = m*pp_scale(rhoc,Tc)
+    z[2] = m*pp_rate(rhoc,Tc)
     # returns the z array
     return z
 
@@ -140,7 +140,7 @@ def lengthscales(m,z,mu,XH):
         z/|dzdm| (units = ?)
     """
 
-    r,P,L = z
+    r,p,L = z
 
     dzdm = stellar_derivatives(m, z, mu, XH)
 
@@ -152,13 +152,13 @@ def lengthscales(m,z,mu,XH):
     H_r = 4*np.pi*r**3*rho
     
     #calculates pressure
-    H_p = (4*np.pi*r**4*P)/(G*m)
+    H_p = (4*np.pi*r**4*p)/(G*m)
 
     H_L = L/np.abs(dzdm[2])
 
     #determines whether radius or pressure is smaller and then assigns 
     #   it to the value h (step size)
-    h = min(H_r,H_p,H_L)
+    h = min(H_r, H_p, H_L)
 
     #returns h
     return h
