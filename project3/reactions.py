@@ -29,6 +29,6 @@ def pp_rate(T,rho,XH,pp_factor=1.0):
     # simplifying tempurature
     T9 = T/1e9
 
-    rate = 2.4e-3 * rho * XH**2 / T9**(2/3) * np.exp(-3.38/T9^(1/3)) * pp_factor
+    rate = 2.4e-3 * rho * XH**2 / T9**(2/3) * np.exp(-3.38/T9**(1/3)) * pp_factor
     
     return rate
