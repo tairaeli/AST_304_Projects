@@ -31,15 +31,15 @@ def central_thermal(m,r,mu):
     m *= Msun
     r *= Rsun
 
-    Pc = 3/(8*np.pi) * G*m**2/r**4
-    rhoc = 3/(4*np.pi) * m/r**3
-    Tc = (G*m/r)*mu*m_u/(2*kB)
+    Pc = 0.77 * G*m**2/r**4
+    rhoc = 5.99 * 3/(4*np.pi) * m/r**3
+    Tc = 0.54*(G*m/r)*mu*m_u/(kB)
     
     return Pc, rhoc, Tc
 
 # The following should be modified versions of the routines you wrote for the 
 # white dwarf project
-def stellar_derivatives(m,z,mu,XH):
+def stellar_derivatives(m,z, rho, T, mu, XH):
     """
     RHS of Lagrangian differential equations for radius and pressure
     
@@ -67,10 +67,6 @@ def stellar_derivatives(m,z,mu,XH):
     #   of the dzdm array
     p = z[1]
 
-    Pc, rhoc, Tc = central_thermal(m, r, mu)
-
-    rho, T = get_rho_and_T(p,Pc,rhoc,Tc)
-
     #uses the equation for radius to determine the first elements 
     #   of the dzdm array
     dzdm[0] = (4*np.pi*r**2*rho)**(-1)
@@ -83,7 +79,7 @@ def stellar_derivatives(m,z,mu,XH):
 
     return dzdm #returns the dzdm array
 
-def central_values(Pc_i, R,delta_m, mu, XH):
+def central_values(Pc, rhoc, Tc, R, delta_m, mu, XH):
     """
     Constructs the boundary conditions at the edge of a small, constant density 
     core of mass delta_m with central pressure P_c
@@ -109,20 +105,16 @@ def central_values(Pc_i, R,delta_m, mu, XH):
 
     z[0] = R
 
-    # dzdm = stellar_derivatives(m, z, mu, XH)
-
-    Pc, rhoc, Tc = central_thermal(m, R, mu)
-
     #calculates the first elements of the z array
 
     z[1] = Pc
     
-    z[2] = m*pp_rate(rhoc,Tc)
+    z[2] = m*pp_rate(rhoc, Tc, XH)
     
     # returns the z array
     return z
 
-def lengthscales(m,z,mu,XH):
+def lengthscales(m, z, rho, T, mu, XH):
     """
     Computes the radial length scale H_r and the pressure length H_P
     
@@ -140,11 +132,7 @@ def lengthscales(m,z,mu,XH):
 
     r,p,L = z
 
-    dzdm = stellar_derivatives(m, z, mu, XH)
-
-    Pc, rhoc, Tc = central_thermal(m, r, mu)
-
-    rho, T = get_rho_and_T(p, Pc, rhoc, Tc)
+    dzdm = stellar_derivatives(m, z, rho, T, mu, XH)
 
     #calculates radius
     H_r = 4*np.pi*r**3*rho
@@ -161,7 +149,7 @@ def lengthscales(m,z,mu,XH):
     #returns h
     return h
 
-def integrate(Pc, R, delta_m, eta, xi, mu, XH, max_steps=10000):
+def integrate(r0, delta_m, eta, xi, mu, XH, max_steps=10000):
     """
     Integrates the scaled stellar structure equations
     Arguments
@@ -191,8 +179,11 @@ def integrate(Pc, R, delta_m, eta, xi, mu, XH, max_steps=10000):
     p_step = np.zeros(max_steps)
     l_step = np.zeros(max_steps)
 
+    Pc, rhoc, Tc = central_thermal(delta_m, r0, mu)
+
     # set starting conditions using central_values
-    z = central_values(Pc, R, delta_m, mu, XH)
+    z = central_values(Pc, rhoc, Tc, r0, delta_m, mu, XH)
+
     #sets mass as delta_m (given when running the function)
     m = delta_m
     
@@ -224,11 +215,13 @@ def integrate(Pc, R, delta_m, eta, xi, mu, XH, max_steps=10000):
 
         l_step[step] = luminosity
 
+        rho, T = get_rho_and_T(pressure, Pc, rhoc, Tc)
+
         # set the stepsize
-        h = xi*lengthscales(m_step[step], z, mu)
+        h = xi*lengthscales(m_step[step], z, rho, T, mu, XH)
 
         # take a step
-        z = rk4(stellar_derivatives,m,z,h,args=(mu))
+        z = rk4(stellar_derivatives,m,z,h,args=(rho, T, mu, XH))
         #updates mass by adding step to the previous mass (m = m + h)
         m += h
 
