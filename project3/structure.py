@@ -9,7 +9,7 @@ radius.
 import numpy as np
 from eos import get_rho_and_T, mean_molecular_weight
 from ode import rk4
-from astro_const import G, Msun, Rsun, Lsun, kB, m_u, fourpi
+from astro_const import G, Msun, Rsun, Lsun, kB, m_u, fourpi, sigmaSB
 from reactions import pp_rate
 
 def central_thermal(m,r,mu):
@@ -82,7 +82,7 @@ def stellar_derivatives(m,z,mu,XH):
 
     return dzdm #returns the dzdm array
 
-def central_values(Pc,delta_m,mu, XH):
+def central_values(Pi, R,delta_m, mu, XH):
     """
     Constructs the boundary conditions at the edge of a small, constant density 
     core of mass delta_m with central pressure P_c
@@ -105,26 +105,22 @@ def central_values(Pc,delta_m,mu, XH):
 
     #sets mass as the delta_m input of the function
     m = delta_m
-    
-    #sets pc as the second elements of the z array
-    z[1] = Pc
 
-    #determines density by running the density function with inputs of 
-    #   pc (calculated above) and mue (given for central_values)
-
-    r,p,L = z
+    z[0] = R
 
     dzdm = stellar_derivatives(m, z, mu, XH)
 
-    Pc, rhoc, Tc = central_thermal(m, r, mu)
+    Pc, rhoc, Tc = central_thermal(m, R, mu)
 
-    rho, T = get_rho_and_T(p, Pc, rhoc, Tc)
-
-    rho = density(Pc,mue)
+    rho, T = get_rho_and_T(Pi, Pc, rhoc, Tc)
 
     #calculates the first elements of the z array
-    z[0] = ((3*m)/(4*np.pi*rho))**(1/3)
+    # z[0] = ((3*m)/(4*np.pi*rho))**(1/3)
     
+    z[1] = Pi
+
+    z[2] = 4*np.pi*R**2 * sigmaSB * T**4
+
     # returns the z array
     return z
 
@@ -167,7 +163,7 @@ def lengthscales(m,z,mu,XH):
     #returns h
     return h
 
-def integrate(Pc,delta_m,eta,xi,mu,max_steps=10000):
+def integrate(Pc, R, delta_m, eta, xi, mu, XH, max_steps=10000):
     """
     Integrates the scaled stellar structure equations
     Arguments
@@ -198,7 +194,7 @@ def integrate(Pc,delta_m,eta,xi,mu,max_steps=10000):
     l_step = np.zeros(max_steps)
 
     # set starting conditions using central_values
-    z = central_values(Pc,delta_m,mu)
+    z = central_values(Pc, R, delta_m, mu, XH)
     #sets mass as delta_m (given when running the function)
     m = delta_m
     
