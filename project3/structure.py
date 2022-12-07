@@ -109,18 +109,16 @@ def central_values(Pc_i, R,delta_m, mu, XH):
 
     z[0] = R
 
-    dzdm = stellar_derivatives(m, z, mu, XH)
+    # dzdm = stellar_derivatives(m, z, mu, XH)
 
     Pc, rhoc, Tc = central_thermal(m, R, mu)
-
-    # would Pc and Pc_i be the same here
-    rho, T = get_rho_and_T(Pc_i, Pc, rhoc, Tc)
 
     #calculates the first elements of the z array
 
     z[1] = Pc
     
     z[2] = m*pp_rate(rhoc,Tc)
+    
     # returns the z array
     return z
 
