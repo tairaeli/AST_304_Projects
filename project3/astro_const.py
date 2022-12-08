@@ -1,6 +1,6 @@
 ########################################################################
 # MSU Hollow Low Mass Star Society: Erin Syerson, Elias Taira, Michael 
-#   Bellaver, and Joey Epley
+#   Bellaver, and Joe Epley
 # AST304, Fall 2020
 # Michigan State University
 ########################################################################
