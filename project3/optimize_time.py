@@ -57,11 +57,3 @@ for i,S_mass in enumerate(mass_list):
     rhoc_list[i] = rhoc
 
     Tc_list[i] = Tc
-
-print(R_final)
-
-Pc, rhoc, Tc = central_thermal(S_mass, R_final, mu)
-
-m, r, p, l = integrate(Pc,rhoc,Tc,delta_m,eta,xi,mu)
-
-print(R*Rsun - r[-1])
