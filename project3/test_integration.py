@@ -1,7 +1,10 @@
 import numpy as np
 from structure import central_values, integrate
 from eos import mean_molecular_weight
-r0 = 1e-8
+
+# seems like changing the r0 significantly alters the resulting arrays
+# not really sure what to do with this information
+r0 = 0.000000001
 
 delta_m = 1e-4
 
