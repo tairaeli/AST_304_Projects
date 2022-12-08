@@ -7,9 +7,9 @@ from scipy.optimize import brentq
 
 r0 = 0.000000001
 
-delta_m = 1e-35
+delta_m = 1e-30
 
-eta = 1e-30
+eta = 9e-20
 
 xi = 0.05
 
@@ -21,7 +21,7 @@ X = np.array([XH, 0.275, 0.019])
 
 mu = mean_molecular_weight(Z,A,X)
 
-S_mass = 0.3
+# S_mass = 0.3
 R = 0.33333
 
 
@@ -36,7 +36,27 @@ def min_this(R_guess, S_mass, delta_m, eta, xi, mu):
 
     return l[-1] - L_surface
 
-R_final = brentq(min_this,a = 0.01, b = 1, xtol = 1e-10,args = (S_mass, delta_m, eta, xi, mu))
+mass_list = np.linspace(0.1,0.31,10)
+# mass_list = [0.1]
+L_list = np.zeros(len(mass_list))
+Teff_list = np.zeros(len(mass_list))
+rhoc_list = np.zeros(len(mass_list))
+Tc_list = np.zeros(len(mass_list))
+
+for i,S_mass in enumerate(mass_list):
+    R_final = brentq(min_this,a = 0.01, b = 1, xtol = 1e-10,args = (S_mass, delta_m, eta, xi, mu))
+
+    T_surf = Teff(S_mass)
+
+    Teff_list[i] = T_surf
+
+    L_list[i] = surface_luminosity(T_surf,R_final)
+
+    Pc, rhoc, Tc = central_thermal(S_mass, R_final, mu)
+
+    rhoc_list[i] = rhoc
+
+    Tc_list[i] = Tc
 
 print(R_final)
 
