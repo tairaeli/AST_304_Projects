@@ -132,7 +132,9 @@ def lengthscales(m, z, rho, T, mu, XH):
 
     r,p,L = z
 
-    dzdm = stellar_derivatives(m, z, rho, T, mu, XH)
+    # dzdm = stellar_derivatives(m, z, rho, T, mu, XH)
+
+    dLdr = pp_rate(T, rho, XH, pp_factor=1)
 
     #calculates radius
     H_r = 4*np.pi*r**3*rho
@@ -140,7 +142,7 @@ def lengthscales(m, z, rho, T, mu, XH):
     #calculates pressure
     H_p = (4*np.pi*r**4*p)/(G*m)
 
-    H_L = L/np.abs(dzdm[2])
+    H_L = L/np.abs(dLdr)
 
     #determines whether radius or pressure is smaller and then assigns 
     #   it to the value h (step size)
