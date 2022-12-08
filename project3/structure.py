@@ -79,7 +79,7 @@ def stellar_derivatives(m,z, rho, T, mu, XH):
 
     return dzdm #returns the dzdm array
 
-def central_values(Pc, rhoc, Tc, R, delta_m, mu, XH):
+def central_values(Pc, rhoc, Tc, delta_m, mu, XH):
     """
     Constructs the boundary conditions at the edge of a small, constant density 
     core of mass delta_m with central pressure P_c
@@ -103,7 +103,7 @@ def central_values(Pc, rhoc, Tc, R, delta_m, mu, XH):
     #sets mass as the delta_m input of the function
     m = delta_m
 
-    z[0] = R
+    z[0] = ((3*delta_m)/(4*np.pi*rhoc))**1/3
 
     #calculates the first elements of the z array
 
@@ -134,24 +134,28 @@ def lengthscales(m, z, rho, T, mu, XH):
 
     # dzdm = stellar_derivatives(m, z, rho, T, mu, XH)
 
-    dLdr = pp_rate(T, rho, XH, pp_factor=1)
+    dzdm = stellar_derivatives(m, z, rho, T, mu, XH)
 
-    #calculates radius
-    H_r = 4*np.pi*r**3*rho
+    H_z = z/np.abs(dzdm)
+
+    # #calculates radius
+    # H_r = 4*np.pi*r**3*rho
     
-    #calculates pressure
-    H_p = (4*np.pi*r**4*p)/(G*m)
+    # #calculates pressure
+    # H_p = (4*np.pi*r**4*p)/(G*m)
 
-    H_L = L/np.abs(dLdr)
+    # H_L = L/np.abs(dLdr)
 
     #determines whether radius or pressure is smaller and then assigns 
     #   it to the value h (step size)
-    h = min(H_r, H_p, H_L)
+    # h = min(H_r, H_p, H_L)
+
+    h = np.min(H_z)
 
     #returns h
     return h
 
-def integrate(r0, delta_m, eta, xi, mu, XH, max_steps=10000):
+def integrate(Pc, rhoc, Tc, delta_m, eta, xi, mu, XH = 0.706, max_steps=10000):
     """
     Integrates the scaled stellar structure equations
     Arguments
@@ -181,10 +185,8 @@ def integrate(r0, delta_m, eta, xi, mu, XH, max_steps=10000):
     p_step = np.zeros(max_steps)
     l_step = np.zeros(max_steps)
 
-    Pc, rhoc, Tc = central_thermal(delta_m, r0, mu)
-
     # set starting conditions using central_values
-    z = central_values(Pc, rhoc, Tc, r0, delta_m, mu, XH)
+    z = central_values(Pc, rhoc, Tc, delta_m, mu, XH)
 
     #sets mass as delta_m (given when running the function)
     m = delta_m
