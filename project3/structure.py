@@ -99,7 +99,7 @@ def central_values(Pc, rhoc, Tc, delta_m, mu, XH):
             central values of radius and pressure (units = ?)
     """
     
-    #sets up an array of zeroes that has a shape of 2
+    #sets up an array of zeroes that has a shape of 3
     z = np.zeros(3)
 
     #sets mass as the delta_m input of the function
