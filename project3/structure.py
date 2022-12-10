@@ -41,7 +41,7 @@ def central_thermal(m,r,mu):
 
 # The following are modified versions of the routines we wrote for the 
 # white dwarf project
-def stellar_derivatives(m,z, rho, T, mu, XH):
+def stellar_derivatives(m,z, rho, T, mu, XH, pp_factor = 1.0):
     """
     RHS of Lagrangian differential equations for radius and pressure
     
@@ -77,11 +77,11 @@ def stellar_derivatives(m,z, rho, T, mu, XH):
     #   of the dzdm array
     dzdm[1] = -G*m/(4*np.pi*r**4)
 
-    dzdm[2] = pp_rate(T, rho, XH, pp_factor= 1)
+    dzdm[2] = pp_rate(T, rho, XH, pp_factor)
 
     return dzdm #returns the dzdm array
 
-def central_values(Pc, rhoc, Tc, delta_m, mu, XH):
+def central_values(Pc, rhoc, Tc, delta_m, mu, XH, pp_factor = 1.0):
     """
     Constructs the boundary conditions at the edge of a small, constant density 
     core of mass delta_m with central pressure P_c
@@ -111,12 +111,12 @@ def central_values(Pc, rhoc, Tc, delta_m, mu, XH):
 
     z[1] = Pc
     
-    z[2] = m*pp_rate(rhoc, Tc, XH)
+    z[2] = m*pp_rate(rhoc, Tc, XH, pp_factor)
     
     # returns the z array
     return z
 
-def lengthscales(m, z, rho, T, mu, XH):
+def lengthscales(m, z, rho, T, mu, XH, pp_factor = 1):
     """
     Computes the radial length scale H_r and the pressure length H_P
     
@@ -136,7 +136,7 @@ def lengthscales(m, z, rho, T, mu, XH):
 
     # dzdm = stellar_derivatives(m, z, rho, T, mu, XH)
 
-    dzdm = stellar_derivatives(m, z, rho, T, mu, XH)
+    dzdm = stellar_derivatives(m, z, rho, T, mu, XH, pp_factor)
 
     H_z = z/np.abs(dzdm)
 
@@ -145,7 +145,7 @@ def lengthscales(m, z, rho, T, mu, XH):
     #returns h
     return h
 
-def integrate(Pc, rhoc, Tc, delta_m, eta, xi, mu, XH = 0.706, max_steps=10000):
+def integrate(Pc, rhoc, Tc, delta_m, eta, xi, mu, XH = 0.706, pp_factor = 1.0, max_steps=10000):
     """
     Integrates the scaled stellar structure equations
     Arguments
@@ -176,7 +176,7 @@ def integrate(Pc, rhoc, Tc, delta_m, eta, xi, mu, XH = 0.706, max_steps=10000):
     l_step = np.zeros(max_steps)
 
     # set starting conditions using central_values
-    z = central_values(Pc, rhoc, Tc, delta_m, mu, XH)
+    z = central_values(Pc, rhoc, Tc, delta_m, mu, XH, pp_factor)
 
     #sets mass as delta_m (given when running the function)
     m = delta_m
@@ -212,10 +212,10 @@ def integrate(Pc, rhoc, Tc, delta_m, eta, xi, mu, XH = 0.706, max_steps=10000):
         rho, T = get_rho_and_T(pressure, Pc, rhoc, Tc)
 
         # set the stepsize
-        h = xi*lengthscales(m_step[step], z, rho, T, mu, XH)
+        h = xi*lengthscales(m_step[step], z, rho, T, mu, XH, pp_factor)
 
         # take a step
-        z = rk4(stellar_derivatives,m,z,h,args=(rho, T, mu, XH))
+        z = rk4(stellar_derivatives,m,z,h,args=(rho, T, mu, XH, pp_factor))
         #updates mass by adding step to the previous mass (m = m + h)
         m += h
 
@@ -227,3 +227,4 @@ def integrate(Pc, rhoc, Tc, delta_m, eta, xi, mu, XH = 0.706, max_steps=10000):
         raise Exception('too many iterations')
         
     return m_step[0:Nsteps],r_step[0:Nsteps],p_step[0:Nsteps], l_step[0:Nsteps]
+
