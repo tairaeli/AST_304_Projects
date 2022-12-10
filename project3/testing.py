@@ -20,6 +20,10 @@ from test_eos import *
 from test_reactions import *
 from test_structure import *
 from test_zams import *
+from test_const import *
+
+test_const()
+print("cosntants passed testing")
 
 test_chem()
 print("chemistry passed testing")
