@@ -1,3 +1,8 @@
+# MSU Hollow Low-Mass Star Society
+# Elias Taira, Michael Bellaver, Joe Epley, Erin Syerson
+# AST 304 Fall 2022
+# Project 3
+
 """
 Routines to compute an adiabatic equation of state.
 """
@@ -12,7 +17,12 @@ def mean_molecular_weight(Z,A,X):
         Z, A, X (either scaler or array)
             charge numbers, atomic numbers, and mass fractions
             The mass fractions must sum to 1
+            
+    Returns
+        mu
+            mean molecular weight
     """
+    # arrays of the Z, A, and X values for the makeup of the star
     Zs = np.array(Z)
     As = np.array(A)
     Xs = np.array(X)

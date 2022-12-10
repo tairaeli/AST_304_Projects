@@ -6,6 +6,7 @@ Routines for computing structure of fully convective star of a given mass and
 radius.
 """
 
+# handy imports
 import numpy as np
 from eos import get_rho_and_T, mean_molecular_weight
 from ode import rk4
@@ -27,17 +28,18 @@ def central_thermal(m,r,mu):
         Pc, rhoc, Tc
             central pressure, density, and temperature in solar units
     """
-    # fill this in
+    # converts mass and radius to SI units
     m *= Msun
     r *= Rsun
 
+    # virial pressure, dentisy, and temperaure relations
     Pc = 0.77 * G*m**2/r**4
     rhoc = 5.99 * 3/(4*np.pi) * m/r**3
     Tc = 0.54*(G*m/r)*mu*m_u/(kB)
     
     return Pc, rhoc, Tc
 
-# The following should be modified versions of the routines you wrote for the 
+# The following are modified versions of the routines we wrote for the 
 # white dwarf project
 def stellar_derivatives(m,z, rho, T, mu, XH):
     """
@@ -97,7 +99,7 @@ def central_values(Pc, rhoc, Tc, delta_m, mu, XH):
             central values of radius and pressure (units = ?)
     """
     
-    #sets up an array of zeroes that has a shape of 2
+    #sets up an array of zeroes that has a shape of 3
     z = np.zeros(3)
 
     #sets mass as the delta_m input of the function
@@ -137,18 +139,6 @@ def lengthscales(m, z, rho, T, mu, XH):
     dzdm = stellar_derivatives(m, z, rho, T, mu, XH)
 
     H_z = z/np.abs(dzdm)
-
-    # #calculates radius
-    # H_r = 4*np.pi*r**3*rho
-    
-    # #calculates pressure
-    # H_p = (4*np.pi*r**4*p)/(G*m)
-
-    # H_L = L/np.abs(dLdr)
-
-    #determines whether radius or pressure is smaller and then assigns 
-    #   it to the value h (step size)
-    # h = min(H_r, H_p, H_L)
 
     h = np.min(H_z)
 
